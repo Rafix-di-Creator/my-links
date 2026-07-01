@@ -249,30 +249,30 @@
 <header>
   <div class="header-row">
     <div>
-      <h1>Linki</h1>
-      <p>Zapisane arkusze i dokumenty — szybki dostęp z jednego miejsca.</p>
+      <h1>Links</h1>
+      <p>Saved sheets and documents — quick access in one place.</p>
     </div>
-    <button id="addBtn">+ Dodaj link</button>
+    <button id="addBtn">+ Add link</button>
   </div>
 </header>
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h3 id="modalTitle">Nowy link</h3>
-    <label for="linkTitle">Nazwa</label>
-    <input id="linkTitle" type="text" placeholder="np. Budżet 2026">
-    <label for="linkUrl">Adres URL</label>
+    <h3 id="modalTitle">New link</h3>
+    <label for="linkTitle">Name</label>
+    <input id="linkTitle" type="text" placeholder="e.g. Budget 2026">
+    <label for="linkUrl">URL</label>
     <input id="linkUrl" type="text" placeholder="https://...">
-    <label for="linkType">Typ</label>
+    <label for="linkType">Type</label>
     <select id="linkType">
-      <option value="sheet">Arkusz</option>
-      <option value="doc">Dokument</option>
-      <option value="other">Inne</option>
+      <option value="sheet">Sheet</option>
+      <option value="doc">Document</option>
+      <option value="other">Other</option>
     </select>
-    <div class="error-msg" id="errorMsg">Podaj nazwę i poprawny adres URL.</div>
+    <div class="error-msg" id="errorMsg">Please enter a name and a valid URL.</div>
     <div class="modal-actions">
-      <button id="cancelLink">Anuluj</button>
-      <button id="saveLink">Zapisz</button>
+      <button id="cancelLink">Cancel</button>
+      <button id="saveLink">Save</button>
     </div>
   </div>
 </div>
@@ -338,8 +338,8 @@
   function setDeleted(v){ saveJSON(STORAGE_DELETED, v); }
 
   function tagLabel(type){
-    if(type === 'sheet') return 'Arkusz';
-    if(type === 'doc') return 'Dokument';
+    if(type === 'sheet') return 'Sheet';
+    if(type === 'doc') return 'Document';
     return 'Link';
   }
   function shortUrl(url){
@@ -422,7 +422,7 @@
     const editBtn = document.createElement('button');
     editBtn.className = 'icon-btn edit-btn';
     editBtn.type = 'button';
-    editBtn.title = 'Edytuj link';
+    editBtn.title = 'Edit link';
     editBtn.textContent = '✎';
     editBtn.addEventListener('click', function(e){
       e.preventDefault();
@@ -433,7 +433,7 @@
     const removeBtn = document.createElement('button');
     removeBtn.className = 'icon-btn remove-btn';
     removeBtn.type = 'button';
-    removeBtn.title = 'Usuń link';
+    removeBtn.title = 'Remove link';
     removeBtn.textContent = '✕';
     removeBtn.addEventListener('click', function(e){
       e.preventDefault();
@@ -466,12 +466,12 @@
 
     if(editingId){
       const link = findLink(editingId);
-      modalTitle.textContent = 'Edytuj link';
+      modalTitle.textContent = 'Edit link';
       titleInput.value = link ? link.title : '';
       urlInput.value = link ? link.url : '';
       typeSelect.value = link ? link.type : 'sheet';
     }else{
-      modalTitle.textContent = 'Nowy link';
+      modalTitle.textContent = 'New link';
       titleInput.value = '';
       urlInput.value = '';
       typeSelect.value = 'sheet';
