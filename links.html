@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monoka — Links</title>
+<style>
+  :root{
+    --pink:#ff3e7a;
+    --mint:#00ffce;
+    --blue:#2152a5;
+    --ink:#0c0d12;
+    --paper:#f5f5f3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    min-height:100vh;
+  }
+  header{
+    padding:64px 24px 32px;
+    max-width:1920px;
+    margin:0 auto;
+  }
+  header h1{
+    font-size:clamp(2rem, 6vw, 4rem);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    background:linear-gradient(90deg, var(--pink), var(--mint));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    margin-top:8px;
+    color:#9a9aa3;
+    font-size:1rem;
+  }
+  .header-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  #addBtn{
+    background:var(--pink);
+    color:#0c0d12;
+    border:none;
+    font-weight:700;
+    font-size:0.85rem;
+    letter-spacing:0.02em;
+    padding:12px 22px;
+    border-radius:99px;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+    white-space:nowrap;
+  }
+  #addBtn:hover{
+    background:var(--mint);
+    transform:translateY(-2px);
+  }
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.65);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:24px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:#16171d;
+    border:1px solid #26272f;
+    border-radius:14px;
+    padding:32px;
+    width:100%;
+    max-width:440px;
+  }
+  .modal h3{
+    font-size:1.2rem;
+    margin-bottom:18px;
+  }
+  .modal label{
+    display:block;
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#9a9aa3;
+    margin-bottom:6px;
+    margin-top:16px;
+  }
+  .modal input, .modal select{
+    width:100%;
+    background:#0c0d12;
+    border:1px solid #26272f;
+    border-radius:8px;
+    padding:10px 12px;
+    color:var(--paper);
+    font-size:0.9rem;
+  }
+  .modal input:focus, .modal select:focus{
+    outline:2px solid var(--blue);
+    border-color:var(--blue);
+  }
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:26px;
+  }
+  .modal-actions button{
+    flex:1;
+    padding:11px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    font-size:0.85rem;
+  }
+  #saveLink{ background:var(--mint); color:#0c0d12; }
+  #cancelLink{ background:#26272f; color:var(--paper); }
+  .error-msg{
+    color:var(--pink);
+    font-size:0.8rem;
+    margin-top:10px;
+    display:none;
+  }
+  .card-actions{
+    position:absolute;
+    top:10px; right:10px;
+    display:flex;
+    gap:6px;
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  a.card:hover .card-actions{ opacity:1; }
+  .icon-btn{
+    width:24px; height:24px;
+    border-radius:50%;
+    border:1px solid #26272f;
+    background:#0c0d12;
+    color:#6e6e78;
+    font-size:0.75rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .icon-btn:hover{ color:var(--mint); border-color:var(--mint); }
+  .icon-btn.remove-btn:hover{ color:var(--pink); border-color:var(--pink); }
+  .card{ position:relative; }
+  main{
+    max-width:1920px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:16px;
+  }
+  @media (max-width:1024px){
+    .grid{grid-template-columns:repeat(3, 1fr);}
+  }
+  @media (max-width:768px){
+    .grid{grid-template-columns:repeat(2, 1fr);}
+  }
+  @media (max-width:480px){
+    .grid{grid-template-columns:1fr;}
+  }
+  a.card{
+    display:block;
+    text-decoration:none;
+    color:var(--paper);
+    background:#16171d;
+    border:1px solid #26272f;
+    border-radius:12px;
+    padding:24px;
+    position:relative;
+    overflow:hidden;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    cursor:grab;
+  }
+  a.card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--pink), var(--blue), var(--mint));
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .25s ease;
+  }
+  a.card:hover{
+    transform:translateY(-3px);
+    border-color:var(--blue);
+    background:#1b1c24;
+  }
+  a.card:hover::before{
+    transform:scaleX(1);
+  }
+  a.card.dragging{
+    opacity:0.4;
+    cursor:grabbing;
+  }
+  a.card.drag-over{
+    border-color:var(--mint);
+    box-shadow:0 0 0 1px var(--mint);
+  }
+  .card h2{
+    font-size:1.05rem;
+    font-weight:600;
+    margin-bottom:6px;
+    word-break:break-word;
+    text-align:center;
+  }
+  .tag{
+    display:inline-block;
+    font-size:0.65rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    padding:3px 8px;
+    border-radius:99px;
+    margin-bottom:14px;
+    font-weight:700;
+  }
+  .tag.sheet{ background:rgba(0,255,206,0.12); color:var(--mint); }
+  .tag.doc{ background:rgba(255,62,122,0.12); color:var(--pink); }
+  .card span.url{
+    display:none;
+  }
+  footer{
+    max-width:1920px;
+    margin:0 auto;
+    padding:24px;
+    color:#6e6e78;
+    font-size:0.8rem;
+    border-top:1px solid #26272f;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div>
+      <h1>Linki</h1>
+      <p>Zapisane arkusze i dokumenty — szybki dostęp z jednego miejsca.</p>
+    </div>
+    <button id="addBtn">+ Dodaj link</button>
+  </div>
+</header>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle">Nowy link</h3>
+    <label for="linkTitle">Nazwa</label>
+    <input id="linkTitle" type="text" placeholder="np. Budżet 2026">
+    <label for="linkUrl">Adres URL</label>
+    <input id="linkUrl" type="text" placeholder="https://...">
+    <label for="linkType">Typ</label>
+    <select id="linkType">
+      <option value="sheet">Arkusz</option>
+      <option value="doc">Dokument</option>
+      <option value="other">Inne</option>
+    </select>
+    <div class="error-msg" id="errorMsg">Podaj nazwę i poprawny adres URL.</div>
+    <div class="modal-actions">
+      <button id="cancelLink">Anuluj</button>
+      <button id="saveLink">Zapisz</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  Monoka · Toruń
+</footer>
+
+<script>
+(function(){
+  const DEFAULT_LINKS = [
+    { id:'s1',  title:'Home',                       url:'https://docs.google.com/spreadsheets/d/1rZKePJdPZ4-QmLiiJPZyMbbbrJJG-tEiWS8fi_BXbz4/edit?gid=63025359#gid=63025359',   type:'sheet' },
+    { id:'s2',  title:'Arkusz kalkulacyjny 2',       url:'https://docs.google.com/spreadsheets/d/1ZFrjbJ-6Xv39J1DxHjBiXfAnC_UjqY101ZJeHgRlpms/edit?gid=1731244183#gid=1731244183', type:'sheet' },
+    { id:'s3',  title:'Arkusz kalkulacyjny 3',       url:'https://docs.google.com/spreadsheets/d/15IoIVZOLxxnEb1xFUKG7laOBTb5xCgJE11veBxHhEkg/edit?gid=0#gid=0',                 type:'sheet' },
+    { id:'s4',  title:'Arkusz kalkulacyjny 4',       url:'https://docs.google.com/spreadsheets/d/1RpkXjE2FozJ5yYAWwm2kkZfOq8mK5XbzR2KxzU8bKa8/edit?gid=1353818366#gid=1353818366', type:'sheet' },
+    { id:'s5',  title:'Arkusz kalkulacyjny 5',       url:'https://docs.google.com/spreadsheets/d/1mOr1TClNDWq6llgZj3SeGkJICyPI5v_wBtrhySl9JvE/edit?gid=2040950231#gid=2040950231', type:'sheet' },
+    { id:'s6',  title:'Arkusz kalkulacyjny 6',       url:'https://docs.google.com/spreadsheets/d/1foPMQIrlxfBmVqlYboUAZK7GJlsrcDGOEaZlo9-WkvY/edit?gid=523087562#gid=523087562',   type:'sheet' },
+    { id:'s7',  title:'Arkusz kalkulacyjny 7',       url:'https://docs.google.com/spreadsheets/d/1RCQpSCgpiRf5UkszRDJ9lP-ETKL9fZGxDoSAPouIxe4/edit?gid=0#gid=0',                 type:'sheet' },
+    { id:'s8',  title:'Arkusz kalkulacyjny 8',       url:'https://docs.google.com/spreadsheets/d/1abx3Zigyb39tjgoDHhtUEOBMLeL89niwSOPdoZZEYl4/edit?gid=1681379836#gid=1681379836', type:'sheet' },
+    { id:'s9',  title:'Arkusz kalkulacyjny 9',       url:'https://docs.google.com/spreadsheets/d/105YMf0bUAq43FkFMchZZDsfq2k0Hci42RwZV73PSSeE/edit?gid=617372275#gid=617372275',   type:'sheet' },
+    { id:'s10', title:'Arkusz kalkulacyjny 10',      url:'https://docs.google.com/spreadsheets/d/1Rlek1CDMrbdS0FjqYxi_MaIII8CVb_yIhqkKC9zdUx4/edit?gid=1766947827#gid=1766947827', type:'sheet' },
+    { id:'d1',  title:'Dokument 1',                  url:'https://docs.google.com/document/d/1tEiVaaeKzeLqE2fKTz0Khjp3LZxbVhA8dOmvb7q8ymU/edit?tab=t.0',                          type:'doc' },
+    { id:'d2',  title:'Dokument 2',                  url:'https://docs.google.com/document/d/1hM72R9vNgXaVtBR4TKDOyaxSEoUGBcpLI75-8ePWmZo/edit?tab=t.0#heading=h.kmsz4yf2x1le',   type:'doc' }
+  ];
+
+  const STORAGE_CUSTOM   = 'monoka_links_custom';
+  const STORAGE_EDITS    = 'monoka_links_edits';
+  const STORAGE_DELETED  = 'monoka_links_deleted';
+  const STORAGE_ORDER    = 'monoka_links_order';
+
+  const grid        = document.getElementById('grid');
+  const overlay      = document.getElementById('overlay');
+  const addBtn       = document.getElementById('addBtn');
+  const cancelBtn    = document.getElementById('cancelLink');
+  const saveBtn      = document.getElementById('saveLink');
+  const titleInput   = document.getElementById('linkTitle');
+  const urlInput     = document.getElementById('linkUrl');
+  const typeSelect   = document.getElementById('linkType');
+  const errorMsg     = document.getElementById('errorMsg');
+  const modalTitle   = document.getElementById('modalTitle');
+
+  let editingId = null;
+
+  function loadJSON(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    }catch(e){ return fallback; }
+  }
+  function saveJSON(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
+  }
+
+  function getCustomLinks(){ return loadJSON(STORAGE_CUSTOM, []); }
+  function setCustomLinks(v){ saveJSON(STORAGE_CUSTOM, v); }
+  function getEdits(){ return loadJSON(STORAGE_EDITS, {}); }
+  function setEdits(v){ saveJSON(STORAGE_EDITS, v); }
+  function getDeleted(){ return loadJSON(STORAGE_DELETED, []); }
+  function setDeleted(v){ saveJSON(STORAGE_DELETED, v); }
+
+  function tagLabel(type){
+    if(type === 'sheet') return 'Arkusz';
+    if(type === 'doc') return 'Dokument';
+    return 'Link';
+  }
+  function shortUrl(url){
+    return url.length > 38 ? url.slice(0, 38) + '…' : url;
+  }
+  function isValidUrl(str){
+    try{
+      const u = new URL(str);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    }catch(e){ return false; }
+  }
+
+  function getAllLinks(){
+    const edits = getEdits();
+    const deleted = getDeleted();
+    const defaults = DEFAULT_LINKS
+      .filter(l => !deleted.includes(l.id))
+      .map(l => edits[l.id] ? Object.assign({}, l, edits[l.id]) : l);
+    return defaults.concat(getCustomLinks());
+  }
+
+  function isCustomId(id){
+    return getCustomLinks().some(l => l.id === id);
+  }
+
+  function findLink(id){
+    return getAllLinks().find(l => l.id === id);
+  }
+
+  function deleteLink(id){
+    if(isCustomId(id)){
+      setCustomLinks(getCustomLinks().filter(l => l.id !== id));
+    }else{
+      const deleted = getDeleted();
+      if(!deleted.includes(id)) deleted.push(id);
+      setDeleted(deleted);
+    }
+  }
+
+  function upsertLink(link){
+    if(isCustomId(link.id)){
+      const custom = getCustomLinks();
+      const idx = custom.findIndex(l => l.id === link.id);
+      custom[idx] = link;
+      setCustomLinks(custom);
+    }else if(DEFAULT_LINKS.some(l => l.id === link.id)){
+      const edits = getEdits();
+      edits[link.id] = { title: link.title, url: link.url, type: link.type };
+      setEdits(edits);
+    }else{
+      const custom = getCustomLinks();
+      custom.push(link);
+      setCustomLinks(custom);
+    }
+  }
+
+  function renderCard(link){
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.dataset.id = link.id;
+    a.draggable = true;
+
+    const tag = document.createElement('span');
+    tag.className = 'tag ' + (link.type === 'doc' ? 'doc' : 'sheet');
+    tag.textContent = tagLabel(link.type);
+
+    const h2 = document.createElement('h2');
+    h2.textContent = link.title;
+
+    const span = document.createElement('span');
+    span.className = 'url';
+    span.textContent = shortUrl(link.url);
+
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'icon-btn edit-btn';
+    editBtn.type = 'button';
+    editBtn.title = 'Edytuj link';
+    editBtn.textContent = '✎';
+    editBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openModal(link.id);
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'icon-btn remove-btn';
+    removeBtn.type = 'button';
+    removeBtn.title = 'Usuń link';
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      deleteLink(link.id);
+      a.remove();
+    });
+
+    actions.appendChild(editBtn);
+    actions.appendChild(removeBtn);
+
+    a.appendChild(tag);
+    a.appendChild(h2);
+    a.appendChild(span);
+    a.appendChild(actions);
+    return a;
+  }
+
+  function renderAll(){
+    grid.innerHTML = '';
+    getAllLinks().forEach(link => grid.appendChild(renderCard(link)));
+    applySavedOrder();
+    initDragAndDrop();
+  }
+
+  function openModal(id){
+    editingId = id || null;
+    overlay.classList.add('open');
+    errorMsg.style.display = 'none';
+
+    if(editingId){
+      const link = findLink(editingId);
+      modalTitle.textContent = 'Edytuj link';
+      titleInput.value = link ? link.title : '';
+      urlInput.value = link ? link.url : '';
+      typeSelect.value = link ? link.type : 'sheet';
+    }else{
+      modalTitle.textContent = 'Nowy link';
+      titleInput.value = '';
+      urlInput.value = '';
+      typeSelect.value = 'sheet';
+    }
+    titleInput.focus();
+  }
+
+  function closeModal(){
+    overlay.classList.remove('open');
+    editingId = null;
+  }
+
+  addBtn.addEventListener('click', function(){ openModal(null); });
+  cancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeModal();
+    if(e.key === 'Enter' && overlay.classList.contains('open')) saveBtn.click();
+  });
+
+  saveBtn.addEventListener('click', function(){
+    const title = titleInput.value.trim();
+    const url = urlInput.value.trim();
+    const type = typeSelect.value;
+
+    if(!title || !isValidUrl(url)){
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const id = editingId || ('l_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
+    upsertLink({ id: id, title: title, url: url, type: type });
+    closeModal();
+    renderAll();
+  });
+
+  function applySavedOrder(){
+    const order = loadJSON(STORAGE_ORDER, null);
+    if(!Array.isArray(order)) return;
+
+    const cards = Array.from(grid.children);
+    const byId = {};
+    cards.forEach(c => { byId[c.dataset.id] = c; });
+
+    order.forEach(id => { if(byId[id]) grid.appendChild(byId[id]); });
+    cards.forEach(c => { if(!order.includes(c.dataset.id)) grid.appendChild(c); });
+  }
+
+  function saveOrder(){
+    saveJSON(STORAGE_ORDER, Array.from(grid.children).map(c => c.dataset.id));
+  }
+
+  function initDragAndDrop(){
+    let draggedEl = null;
+
+    grid.ondragstart = function(e){
+      const card = e.target.closest('.card');
+      if(!card) return;
+      draggedEl = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try{ e.dataTransfer.setData('text/plain', card.dataset.id); }catch(err){}
+    };
+
+    grid.ondragend = function(e){
+      const card = e.target.closest('.card');
+      if(card) card.classList.remove('dragging');
+      grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      draggedEl = null;
+      saveOrder();
+    };
+
+    grid.ondragover = function(e){
+      e.preventDefault();
+      const target = e.target.closest('.card');
+      if(!target || target === draggedEl) return;
+      grid.querySelectorAll('.drag-over').forEach(el => { if(el !== target) el.classList.remove('drag-over'); });
+      target.classList.add('drag-over');
+
+      const rect = target.getBoundingClientRect();
+      const before = (e.clientX - rect.left) < rect.width / 2;
+      if(draggedEl){
+        if(before){ grid.insertBefore(draggedEl, target); }
+        else{ grid.insertBefore(draggedEl, target.nextSibling); }
+      }
+    };
+
+    grid.ondragleave = function(e){
+      const target = e.target.closest('.card');
+      if(target) target.classList.remove('drag-over');
+    };
+
+    grid.ondrop = function(e){
+      e.preventDefault();
+      grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      saveOrder();
+    };
+  }
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
