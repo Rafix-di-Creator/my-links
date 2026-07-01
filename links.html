@@ -287,7 +287,20 @@
 
 <script>
 (function(){
-  const DEFAULT_LINKS = [];
+  const DEFAULT_LINKS = [
+    { id:'s1',  title:'Home',                       url:'https://docs.google.com/spreadsheets/d/1rZKePJdPZ4-QmLiiJPZyMbbbrJJG-tEiWS8fi_BXbz4/edit?gid=63025359#gid=63025359',   type:'sheet' },
+    { id:'s2',  title:'Arkusz kalkulacyjny 2',       url:'https://docs.google.com/spreadsheets/d/1ZFrjbJ-6Xv39J1DxHjBiXfAnC_UjqY101ZJeHgRlpms/edit?gid=1731244183#gid=1731244183', type:'sheet' },
+    { id:'s3',  title:'Arkusz kalkulacyjny 3',       url:'https://docs.google.com/spreadsheets/d/15IoIVZOLxxnEb1xFUKG7laOBTb5xCgJE11veBxHhEkg/edit?gid=0#gid=0',                 type:'sheet' },
+    { id:'s4',  title:'Arkusz kalkulacyjny 4',       url:'https://docs.google.com/spreadsheets/d/1RpkXjE2FozJ5yYAWwm2kkZfOq8mK5XbzR2KxzU8bKa8/edit?gid=1353818366#gid=1353818366', type:'sheet' },
+    { id:'s5',  title:'Arkusz kalkulacyjny 5',       url:'https://docs.google.com/spreadsheets/d/1mOr1TClNDWq6llgZj3SeGkJICyPI5v_wBtrhySl9JvE/edit?gid=2040950231#gid=2040950231', type:'sheet' },
+    { id:'s6',  title:'Arkusz kalkulacyjny 6',       url:'https://docs.google.com/spreadsheets/d/1foPMQIrlxfBmVqlYboUAZK7GJlsrcDGOEaZlo9-WkvY/edit?gid=523087562#gid=523087562',   type:'sheet' },
+    { id:'s7',  title:'Arkusz kalkulacyjny 7',       url:'https://docs.google.com/spreadsheets/d/1RCQpSCgpiRf5UkszRDJ9lP-ETKL9fZGxDoSAPouIxe4/edit?gid=0#gid=0',                 type:'sheet' },
+    { id:'s8',  title:'Arkusz kalkulacyjny 8',       url:'https://docs.google.com/spreadsheets/d/1abx3Zigyb39tjgoDHhtUEOBMLeL89niwSOPdoZZEYl4/edit?gid=1681379836#gid=1681379836', type:'sheet' },
+    { id:'s9',  title:'Arkusz kalkulacyjny 9',       url:'https://docs.google.com/spreadsheets/d/105YMf0bUAq43FkFMchZZDsfq2k0Hci42RwZV73PSSeE/edit?gid=617372275#gid=617372275',   type:'sheet' },
+    { id:'s10', title:'Arkusz kalkulacyjny 10',      url:'https://docs.google.com/spreadsheets/d/1Rlek1CDMrbdS0FjqYxi_MaIII8CVb_yIhqkKC9zdUx4/edit?gid=1766947827#gid=1766947827', type:'sheet' },
+    { id:'d1',  title:'Dokument 1',                  url:'https://docs.google.com/document/d/1tEiVaaeKzeLqE2fKTz0Khjp3LZxbVhA8dOmvb7q8ymU/edit?tab=t.0',                          type:'doc' },
+    { id:'d2',  title:'Dokument 2',                  url:'https://docs.google.com/document/d/1hM72R9vNgXaVtBR4TKDOyaxSEoUGBcpLI75-8ePWmZo/edit?tab=t.0#heading=h.kmsz4yf2x1le',   type:'doc' }
+  ];
 
   const STORAGE_CUSTOM   = 'monoka_links_custom';
   const STORAGE_EDITS    = 'monoka_links_edits';
