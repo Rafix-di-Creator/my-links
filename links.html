@@ -526,11 +526,13 @@
 
   function initDragAndDrop(){
     let draggedEl = null;
+    let didDrag = false;
 
     grid.ondragstart = function(e){
       const card = e.target.closest('.card');
       if(!card) return;
       draggedEl = card;
+      didDrag = false;
       card.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       try{ e.dataTransfer.setData('text/plain', card.dataset.id); }catch(err){}
@@ -548,6 +550,7 @@
       e.preventDefault();
       const target = e.target.closest('.card');
       if(!target || target === draggedEl) return;
+      didDrag = true;
       grid.querySelectorAll('.drag-over').forEach(el => { if(el !== target) el.classList.remove('drag-over'); });
       target.classList.add('drag-over');
 
@@ -569,6 +572,14 @@
       grid.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
       saveOrder();
     };
+
+    grid.addEventListener('click', function(e){
+      const card = e.target.closest('.card');
+      if(!card) return;
+      if(e.target.closest('.icon-btn')) return;
+      if(didDrag){ didDrag = false; e.preventDefault(); return; }
+      // normal click — let the <a> navigate naturally
+    });
   }
 
   renderAll();
